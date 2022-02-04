@@ -10,7 +10,7 @@ router.get('/', (req, res, next) => {
 });
 
 //Sign up
-router.get('/signup', (req, res, next) => {
+router.get('/signup', isNotAuthenticated, (req, res, next) => {
     res.render('signup')
 });
 
@@ -24,7 +24,7 @@ router.post('/signup', passport.authenticate('local-signup', {
 }));
 
 //Sign in
-router.get('/signin', (req, res, next) => {
+router.get('/signin', isNotAuthenticated, (req, res, next) => {
     res.render('signin');
 });
 
@@ -42,14 +42,14 @@ router.get('/logout', (req, res, next) => {
 });
 
 //Middleware, the routes next to it need to be authenticated
-router.use((req, res, next) => {
+/*router.use((req, res, next) => {
     isAuthenticated(req, res, next);
     next();
-});
+});*/
 
 //Profile
 //If the user is authenticated, continue
-router.get('/profile', (req, res, next) => {
+router.get('/profile', isAuthenticated, (req, res, next) => {
     res.render('profile')
 });
 
@@ -62,5 +62,14 @@ function isAuthenticated(req, res, next) {
     //If not, redirect to main page
     res.redirect('/');
 };
+
+//If the user is not authenticated, continue
+function isNotAuthenticated(req, res, next){
+    if(!req.isAuthenticated()){
+        return next();
+    }
+    //Else, redirect to profile page
+    res.redirect('/profile');
+}
 
 module.exports = router;
