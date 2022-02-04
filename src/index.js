@@ -34,8 +34,11 @@ app.use((req, res, next) => {
     //app.locals means a variable that is available in the whole app
     app.locals.signupMessage= req.flash('signupMessage');
     app.locals.signinMessage= req.flash('signinMessage');
+    //Get user info
+    app.locals.user= req.user;
+    app.locals.isAuthenticated= req.isAuthenticated();
     next();
-} );
+});
 
 //Routes
 app.use('/', require('./routes/index'));
