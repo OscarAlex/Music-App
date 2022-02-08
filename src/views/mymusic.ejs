@@ -1,0 +1,57 @@
+<%- layout('layouts/main.ejs') %>
+
+<h1>My music</h1><a href="#" class="btn btn-primary">Play music</a>
+
+<div class="row align-items-start">
+    <!-- Songs column -->
+    <div class="col">
+        <div class="container">
+            <h5 class="pt-2">All songs</h5>
+            <ul class="list-group">
+                <li class="list-group-item">An item<a href="#" class="btn btn-primary">Add to list</a></li>
+                <li class="list-group-item">A second item<a href="#" class="btn btn-primary">Add to list</a></li>
+                <li class="list-group-item">A third item<a href="#" class="btn btn-primary">Add to list</a></li>
+                <li class="list-group-item">A fourth item<a href="#" class="btn btn-primary">Add to list</a></li>
+                <li class="list-group-item">And a fifth one<a href="#" class="btn btn-primary">Add to list</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- Player column -->
+    <div class="col">
+        <div class="container">
+            <h5 class="pt-2">My list</h5>
+            <ul class="list-group">
+                <li class="list-group-item">An item<a href="#" class="btn btn-primary">Remove from list</a></li>
+                <li class="list-group-item">A second item<a href="#" class="btn btn-primary">Remove from list</a></li>
+                <li class="list-group-item">A third item<a href="#" class="btn btn-primary">Remove from list</a></li>
+                <li class="list-group-item">A fourth item<a href="#" class="btn btn-primary">Remove from list</a></li>
+                <li class="list-group-item">And a fifth one<a href="#" class="btn btn-primary">Remove from list</a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- Labels column -->
+    <div class="col">
+        <div class="container">
+            <h5 class="pt-2">My labels</h5>
+            <!-- If no labels -->
+            <% if(labels.length == 0){ %>
+                <div class="card" style="width: 18rem;">
+                    <h5>No labels yet</h5>
+                </div>
+            <!-- If labels -->
+            <% } else{ %>
+            <ul class="list-group">
+                <% labels.forEach(function(label){ %>
+                <li class="list-group-item">
+                    <!-- Checkbox -->
+                    <input class="form-check-input" type="checkbox" id="<%= label.id %>">
+                        <label class="form-check-label" for="<%= label.id %>">
+                            <%= label.label %>
+                        </label>
+                </li>
+                <% }); %>
+            </ul>
+            <% } %>
+        </div>
+    </div>
+</div>

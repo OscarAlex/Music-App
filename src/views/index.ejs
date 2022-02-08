@@ -1,3 +1,26 @@
 <%- layout('layouts/main.ejs') %>
 
-<h1>Hello world</h1>
+<!-- If not authenticated -->
+<% if(!isAuthenticated){ %>
+<h1>Hello World</h1>
+Welcome to my app. Sign up and star to use it.
+<% } %>
+
+<!-- If authenticated -->
+<% if(isAuthenticated){ %>
+<h1>Welcome <%= user.name %></h1>
+
+Here is my music player.
+
+<div class="card" style="width: 18rem;">
+  <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">Music player</h5>
+      <p class="card-text">Title</p>
+      <a href="#" class="btn btn-primary"><<</a>
+      <a href="#" class="btn btn-primary">> ll</a>
+      <a href="#" class="btn btn-primary">>></a>
+    </div>
+</div>
+
+<% } %>

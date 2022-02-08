@@ -4,20 +4,22 @@ const res = require('express/lib/response');
 const router= express.Router();
 const passport= require('passport');
 
-//Index
+const Label= require('../models/label');
+
+//Index page
 router.get('/', (req, res, next) => {
     res.render('index');
 });
 
 //Sign up
 router.get('/signup', isNotAuthenticated, (req, res, next) => {
-    res.render('signup')
+    res.render('signup');
 });
 
 //The local-signup function we created is used
 router.post('/signup', passport.authenticate('local-signup', {
     //If success signing up, redirect to profile
-    successRedirect: '/profile',
+    successRedirect: '/',
     //If not, redirect to sign up
     failureRedirect: '/signup',
     passReqToCallback: true
@@ -29,7 +31,7 @@ router.get('/signin', isNotAuthenticated, (req, res, next) => {
 });
 
 router.post('/signin', passport.authenticate('local-signin', {
-    successRedirect: '/profile',
+    successRedirect: '/',
     failureRedirect: '/signin',
     passReqToCallback: true
 }));
@@ -49,8 +51,16 @@ router.get('/logout', (req, res, next) => {
 
 //Profile
 //If the user is authenticated, continue
-router.get('/profile', isAuthenticated, (req, res, next) => {
-    res.render('profile')
+router.get('/profile', isAuthenticated, async (req, res, next) => {
+    //Search and send labels
+    const labels= await Label.find();
+    res.render('profile', {labels});
+});
+
+router.get('/music', isAuthenticated, async (req, res, next) => {
+    //Search and send labels
+    const labels= await Label.find();
+    res.render('mymusic', {labels});
 });
 
 //Middleware
@@ -68,8 +78,8 @@ function isNotAuthenticated(req, res, next){
     if(!req.isAuthenticated()){
         return next();
     }
-    //Else, redirect to profile page
-    res.redirect('/profile');
+    //Else, redirect to main page
+    res.redirect('/');
 }
 
 module.exports = router;
