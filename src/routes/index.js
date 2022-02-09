@@ -1,10 +1,11 @@
 const express= require('express');
-const req = require('express/lib/request');
-const res = require('express/lib/response');
+//const req = require('express/lib/request');
+//const res = require('express/lib/response');
 const router= express.Router();
 const passport= require('passport');
 
 const Label= require('../models/label');
+const {getConnection}= require('../database');
 
 //Index page
 router.get('/', (req, res, next) => {
@@ -51,13 +52,17 @@ router.get('/logout', (req, res, next) => {
 
 //Profile
 //If the user is authenticated, continue
-router.get('/profile', isAuthenticated, async (req, res, next) => {
+router.get('/profile', async (req, res, next) => {
     //Search and send labels
     const labels= await Label.find();
-    res.render('profile', {labels});
+    const db= getConnection();
+    const tracks= await db.collection("tracks.files").find({}).toArray();
+    //tracks.then(console.log).catch(console.error)
+    
+    res.render('profile', {labels, tracks});
 });
 
-router.get('/music', isAuthenticated, async (req, res, next) => {
+router.get('/music', async (req, res, next) => {
     //Search and send labels
     const labels= await Label.find();
     res.render('mymusic', {labels});

@@ -8,10 +8,12 @@ const userSchema= new Schema({
     password: String
 });
 
+//Encrypt password
 userSchema.methods.encryptPassword= (password) => {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 };
 
+//Compare passwords
 userSchema.methods.comparePassword= function (password) {
     return bcrypt.compareSync(password, this.password);
 };

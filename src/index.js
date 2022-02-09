@@ -9,7 +9,7 @@ const flash= require('connect-flash');
 //Inits
 const app= express();
 require('./database');
-require('./passport/local-auth');
+require('./controllers/local-auth');
 
 //Settings
 //__dirname returns path until src

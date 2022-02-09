@@ -1,0 +1,54 @@
+<%- layout('layouts/main.ejs') %>
+
+<h1>Upload song</h1>
+
+<div class="col-sm-3">
+    <form action="/upload_track" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <!-- File -->
+            <label class="form-label">Select file</label>
+            <input type="file" class="form-control" name="track" id="upload-file">
+            <!-- Name -->
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" id="filename">
+            <!-- Labels -->
+            <label class="form-label">Labels</label>
+            <!-- If no labels -->
+            <% if(labels.length == 0){ %>
+                <div class="card" style="width: 18rem;">
+                    <h5>No labels yet</h5>
+                </div>
+            <!-- If labels -->
+            <% } else{ %>
+            <ul class="list-group">
+                <% labels.forEach(function(label){ %>
+                <li class="list-group-item">
+                    <!-- Checkbox -->
+                    <input class="form-check-input" type="checkbox" name="<%= label.label %>" id="<%= label.id %>">
+                        <label class="form-check-label" for="<%= label.id %>">
+                            <%= label.label %>
+                        </label>
+                </li>
+                <% }); %>
+            </ul>
+            <% } %>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+<script>
+    //Get fields
+    var fileInput = document.getElementById('upload-file');
+    var nameInput = document.getElementById('filename');
+
+    //The change event gives us the input it occurred in 
+    fileInput.addEventListener('change', (event) => {
+        //Get input
+        var input = event.srcElement;
+        //Get name from file and remove extension
+        var fileName = input.files[0].name.split(".")[[0]];
+        //Write filename in Name field
+        nameInput.value = fileName;
+    });
+</script>
