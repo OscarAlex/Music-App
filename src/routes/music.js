@@ -11,6 +11,8 @@ const { getNewLabel,
 const { getUploadTrack,
         postUploadTrack,
         getEditTrack,
+        postEditTrack,
+        deleteTrack,
         getTrack } = require('../controllers/tracks-controller');
 
 //Schema for the labels
@@ -34,6 +36,10 @@ router.post('/upload_track', postUploadTrack);
 
 //Edit track info
 router.get('/edit_track/:id', getEditTrack);
+router.post('/edit_track/:id', postEditTrack);
+
+//Delete track
+router.post('/delete_track/:id', deleteTrack);
 
 //Get track
 router.get('/tracks/:id', getTrack);

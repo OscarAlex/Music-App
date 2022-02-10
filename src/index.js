@@ -35,6 +35,7 @@ app.use((req, res, next) => {
     app.locals.signupMessage= req.flash('signupMessage');
     app.locals.signinMessage= req.flash('signinMessage');
     app.locals.labelMessage= req.flash('labelMessage');
+    app.locals.trackMessage= req.flash('trackMessage');
     //Get user info
     app.locals.user= req.user;
     app.locals.isAuthenticated= req.isAuthenticated();

@@ -3,23 +3,23 @@
 <h1>Edit track</h1>
 
 <div class="col-sm-3">
-    <form action="/edit_label/67?_method=PUT" method="post">
+    <form action="/edit_track/<%= track._id %>?_method=PUT" method="post">
         <input type="hidden" name="_method" value="PUT">
         <div class="mb-3">
             <label class="form-label">Name</label>
-            <input type="text" class="form-control" name="label" value="d">
-            <label class="form-label">Labels</label>
+            <input type="text" class="form-control" name="name" value="<%= track.name %>">
+            
+            <!-- <label class="form-label">Labels</label>
             <ul class="list-group">
                 
                 <li class="list-group-item">
-                    <!-- Checkbox -->
                     <input class="form-check-input" type="checkbox" id="j">
                         <label class="form-check-label" for="j">
                             ioio
                         </label>
                 </li>
                 
-            </ul>
+            </ul> -->
         </div>        
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

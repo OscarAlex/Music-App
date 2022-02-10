@@ -14,14 +14,14 @@
             <!-- Labels -->
             <label class="form-label">Labels</label>
             <!-- If no labels -->
-            <% if(labels.length == 0){ %>
+            <% if(all_labels.length == 0){ %>
                 <div class="card" style="width: 18rem;">
                     <h5>No labels yet</h5>
                 </div>
             <!-- If labels -->
             <% } else{ %>
             <ul class="list-group">
-                <% labels.forEach(function(label){ %>
+                <% all_labels.forEach(function(label){ %>
                 <li class="list-group-item">
                     <!-- Checkbox -->
                     <input class="form-check-input" type="checkbox" name="<%= label.label %>" id="<%= label.id %>">

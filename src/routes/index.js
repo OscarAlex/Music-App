@@ -5,6 +5,7 @@ const router= express.Router();
 const passport= require('passport');
 
 const Label= require('../models/label');
+const Track= require('../models/track');
 const {getConnection}= require('../database');
 
 //Index page
@@ -53,11 +54,9 @@ router.get('/logout', (req, res, next) => {
 //Profile
 //If the user is authenticated, continue
 router.get('/profile', async (req, res, next) => {
-    //Search and send labels
+    //Search and send tracks and labels
     const labels= await Label.find();
-    const db= getConnection();
-    const tracks= await db.collection("tracks.files").find({}).toArray();
-    //tracks.then(console.log).catch(console.error)
+    const tracks= await Track.find();
     
     res.render('profile', {labels, tracks});
 });

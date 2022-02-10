@@ -4,12 +4,12 @@ const {Schema}= mongoose;
 
 const trackSchema= new Schema ({
     name: String,
-    files_id: ObjectId,
-    chunks_id: ObjectId
+    file_id: ObjectId
+    //chunk_id: ObjectId
 });
 
 //The data is saved in a collection called labels
-module.exports= mongoose.model('tracks', labelSchema);
+module.exports= mongoose.model('tracks', trackSchema);
 
 /*
 "fs.files": {    

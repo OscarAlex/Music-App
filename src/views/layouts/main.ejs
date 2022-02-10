@@ -49,6 +49,7 @@
         </div>
       </nav>
 
+    <!-- Login messages -->
     <% if(signupMessage){ %>
         <div><%= signupMessage %></div>
     <% } %>
@@ -57,6 +58,15 @@
         <div><%= signinMessage %></div>
     <% } %>
     
+    <!-- Labels and tracks messages -->
+    <% if(labelMessage){ %>
+        <div><%= labelMessage %></div>
+    <% } %>
+    
+    <% if(trackMessage){ %>
+        <div><%= trackMessage %></div>
+    <% } %>
+
     <div class="container pt-4">
         <%- body %>
     </div>
