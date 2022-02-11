@@ -1,25 +1,39 @@
 <%- layout('layouts/main.ejs') %>
 
-<h1>Edit track</h1>
+<h1>Edit song info</h1>
 
 <div class="col-sm-3">
     <form action="/edit_track/<%= track._id %>?_method=PUT" method="post">
         <input type="hidden" name="_method" value="PUT">
         <div class="mb-3">
+            <!-- Name -->
             <label class="form-label">Name</label>
             <input type="text" class="form-control" name="name" value="<%= track.name %>">
-            
-            <!-- <label class="form-label">Labels</label>
-            <ul class="list-group">
-                
-                <li class="list-group-item">
-                    <input class="form-check-input" type="checkbox" id="j">
-                        <label class="form-check-label" for="j">
-                            ioio
-                        </label>
-                </li>
-                
-            </ul> -->
+            <!-- Labels -->
+            <label class="form-label">Edit labels</label>
+            <!-- If no labels -->
+            <% if(labels.length == 0){ %>
+                <div class="card" style="width: 18rem;">
+                    <h5>No labels yet</h5>
+                </div>
+            <!-- If labels -->
+            <% } else{ %>
+                <ul class="list-group">
+                    <% labels.forEach(function(label){ %>
+                    <li class="list-group-item">
+                        <!-- If label in track -->
+                        <% if(track.labels_ids && track.labels_ids.includes(label.id)){ %>
+                            <input class="form-check-input" type="checkbox" name="<%= label.id %>" id="<%= label.id %>" checked>
+                        <% }else{ %>
+                            <input class="form-check-input" type="checkbox" name="<%= label.id %>" id="<%= label.id %>">
+                        <% } %>
+                            <label class="form-check-label" for="<%= label.id %>">
+                                <%= label.label %>
+                            </label>
+                    </li>
+                    <% }); %>
+                </ul>
+            <% } %>
         </div>        
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

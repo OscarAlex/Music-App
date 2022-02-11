@@ -6,7 +6,6 @@ const passport= require('passport');
 
 const Label= require('../models/label');
 const Track= require('../models/track');
-const {getConnection}= require('../database');
 
 //Index page
 router.get('/', (req, res, next) => {
@@ -64,7 +63,8 @@ router.get('/profile', async (req, res, next) => {
 router.get('/music', async (req, res, next) => {
     //Search and send labels
     const labels= await Label.find();
-    res.render('mymusic', {labels});
+    const tracks= await Track.find();
+    res.render('mymusic', {labels, tracks});
 });
 
 //Middleware

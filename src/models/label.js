@@ -2,7 +2,8 @@ const mongoose= require('mongoose');
 const {Schema}= mongoose;
 
 const labelSchema= new Schema ({
-    label: String
+    label: String,
+    tracks_ids: Array
 });
 
 //The data is saved in a collection called labels

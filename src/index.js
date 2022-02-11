@@ -44,7 +44,8 @@ app.use((req, res, next) => {
 
 //Routes
 app.use('/', require('./routes/index'));
-app.use('/', require('./routes/music'));
+app.use('/', require('./routes/crud-lbl-trck'));
+app.use('/', require('./routes/play-music'));
 
 //Start server
 app.listen(app.get('port'), () => {

@@ -9,8 +9,8 @@ const {ObjectId}= require('mongodb');
 //Upload new track
 const getUploadTrack= async (req, res, next) => {
     //Get labels
-    const all_labels= await Label.find();
-    res.render('upload_track', {all_labels});
+    const labels= await Label.find();
+    res.render('upload_track', {labels});
 }
 
 const postUploadTrack= (req, res, next) => {
@@ -30,28 +30,27 @@ const postUploadTrack= (req, res, next) => {
 
     //Listen when a file is uploaded
     upload.single('track') (req, res, async (err) => {
+        //Get labels
+        const labels= await Label.find();
         //Get name
         const name= req.body.name;
         //Delete name
         delete req.body.name
-
         //Get labels
-        const labels= Object.keys(req.body);
-        console.log('Labels', labels);
+        const labels_ids= Object.keys(req.body);
+        console.log('Labels', labels_ids);
 
         //If error
         if(err){
             req.flash('trackMessage', err);
-            //Get labels
-            const all_labels= await Label.find();
-            res.render('upload_track', {all_labels})
+            res.locals.trackMessage= req.flash('trackMessage');
+            res.render('upload_track', {labels})
         }
         //If no name
         else if(!name){
             req.flash('trackMessage', 'Write a name');
-            //Get labels
-            const all_labels= await Label.find();
-            res.render('upload_track', {all_labels})
+            res.locals.trackMessage= req.flash('trackMessage');
+            res.render('upload_track', {labels})
         }
         //If no errors, save in database
         else{
@@ -70,13 +69,13 @@ const postUploadTrack= (req, res, next) => {
             })
 
             //Upload to bucket with filename= name of the song
-            //const uploadStream= bucket.openUploadStream(name, {metadata: labels});
             const uploadStream= bucket.openUploadStream(name);
             readableTrack.pipe(uploadStream);
 
             //If errors
             uploadStream.on('error', () => {
                 req.flash('trackMessage', 'Error uploading file');
+                res.locals.trackMessage= req.flash('trackMessage');
                 res.render('upload_track')
             });
 
@@ -86,6 +85,7 @@ const postUploadTrack= (req, res, next) => {
                 const newTrack= new Track();
                 newTrack.name= name;
                 newTrack.file_id= uploadStream.id;
+                newTrack.labels_ids= labels_ids;
                 await newTrack.save();
 
                 req.flash('trackMessage', 'File uploaded successfully');
@@ -97,15 +97,35 @@ const postUploadTrack= (req, res, next) => {
 
 //Edit track
 const getEditTrack= async (req, res, next) => {
-    //Get track by id
+    //Get track and labels
     const track= await Track.findById(req.params.id);
-    res.render('edit_track', {track});
+    const labels= await Label.find();
+    res.render('edit_track', {track, labels});
 }
 
 const postEditTrack= async (req, res, next) => {
-    //Get track
-    await Track.findByIdAndUpdate(req.params.id, {name: req.body.name});
-    res.redirect('/profile');
+    //Get name
+    const new_name= req.body.name;
+    //Delete name and method
+    delete req.body.name
+    delete req.body._method
+    
+    //If no name
+    if(!new_name){
+        const track= await Track.findById(req.params.id);
+        const labels= await Label.find();
+        req.flash('trackMessage', 'Write a name');
+        res.locals.trackMessage= req.flash('trackMessage');
+        res.render('edit_track', {track, labels})
+    }
+    //If no errors
+    else{
+        //Get labels array
+        const labels= Object.keys(req.body);
+        //Update by id
+        await Track.findByIdAndUpdate(req.params.id, {name: new_name, labels_ids: labels});
+        res.redirect('/profile');
+    }
 }
 
 //Delete track
@@ -125,25 +145,29 @@ const deleteTrack= async (req, res, next) => {
 
 //Get track
 const getTrack= (req, res, next) => {
+    //Set up response
+    res.set('content-type', 'audio/mp3');
+    res.set('accept-ranges', 'bytes');
+
     //Connection
     const db= getConnection();
     const bucket= new GridFSBucket(db, {
         bucketName: 'tracks'
     });
     
-    res.set('content-type', 'audio/mp3');
-    res.set('accept-ranges', 'bytes');
-    
     //Download from database
     const id= new ObjectId(req.params.id);
     const downloaded= bucket.openDownloadStream(id);
 
+    //While getting data, write chunks
     downloaded.on('data', chunk => {
         res.write(chunk);
     });
+    //If error
     downloaded.on('error', () => {
         res.send('error');
     })
+    //When finish
     downloaded.on('end', () => {
         res.end();
     })

@@ -1,25 +1,36 @@
 <%- layout('layouts/main.ejs') %>
 
-<h1>My music</h1><a href="#" class="btn btn-primary">Play music</a>
+<h1>My music</h1>
+<a href="#" class="btn btn-primary">Play music</a>
 
 <div class="row align-items-start">
     <!-- Songs column -->
     <div class="col">
         <div class="container">
             <h5 class="pt-2">All songs</h5>
+            <!-- If no tracks -->
+            <% if(tracks.length == 0){ %>
+            <div class="card" style="width: 18rem;">
+                <h5>Nothing here</h5>
+            </div>
+            <!-- If tracks -->
+            <% } else{ %>
+            <!-- Add all songs to playlist -->
+            <a href="#" class="btn btn-primary">Add all</a>
             <ul class="list-group">
-                <li class="list-group-item">An item<a href="#" class="btn btn-primary">Add to list</a></li>
-                <li class="list-group-item">A second item<a href="#" class="btn btn-primary">Add to list</a></li>
-                <li class="list-group-item">A third item<a href="#" class="btn btn-primary">Add to list</a></li>
-                <li class="list-group-item">A fourth item<a href="#" class="btn btn-primary">Add to list</a></li>
-                <li class="list-group-item">And a fifth one<a href="#" class="btn btn-primary">Add to list</a></li>
+                <% tracks.forEach(function(track){ %>
+                <li class="list-group-item"><%= track.name %><a href="#" class="btn btn-primary">Add to list</a></li>
+                <% }); %>
             </ul>
+            <% } %>
         </div>
     </div>
     <!-- Player column -->
     <div class="col">
         <div class="container">
             <h5 class="pt-2">My list</h5>
+            <!-- Clear playlist -->
+            <a href="#" class="btn btn-primary">Clear playlist</a>
             <ul class="list-group">
                 <li class="list-group-item">An item<a href="#" class="btn btn-primary">Remove from list</a></li>
                 <li class="list-group-item">A second item<a href="#" class="btn btn-primary">Remove from list</a></li>
@@ -40,6 +51,20 @@
                 </div>
             <!-- If labels -->
             <% } else{ %>
+            <!-- Options with labels -->
+            
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="option" id="all" checked>
+                <label class="form-check-label" for="all">
+                    Include any song with these labels
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="option" id="only">
+                <label class="form-check-label" for="only">
+                    Include only songs with these labels
+                </label>
+            </div>
             <ul class="list-group">
                 <% labels.forEach(function(label){ %>
                 <li class="list-group-item">

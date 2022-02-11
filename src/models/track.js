@@ -4,8 +4,8 @@ const {Schema}= mongoose;
 
 const trackSchema= new Schema ({
     name: String,
-    file_id: ObjectId
-    //chunk_id: ObjectId
+    file_id: ObjectId,
+    labels_ids: Array
 });
 
 //The data is saved in a collection called labels

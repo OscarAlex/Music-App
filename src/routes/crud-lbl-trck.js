@@ -16,7 +16,7 @@ const { getUploadTrack,
         getTrack } = require('../controllers/tracks-controller');
 
 //Schema for the labels
-const Label= require('../models/label');
+//const Label= require('../models/label');
 
 //Add label
 router.get('/add_label', getNewLabel);
