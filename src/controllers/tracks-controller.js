@@ -1,10 +1,9 @@
-const Label= require('../models/label');
-const Track= require('../models/track');
 const multer= require('multer');
 const {getConnection}= require('../database');
-const {GridFSBucket}= require('mongodb');
+const {GridFSBucket, ObjectId}= require('mongodb');
 const {Readable}= require('stream');
-const {ObjectId}= require('mongodb');
+const Label= require('../models/label');
+const Track= require('../models/track');
 
 //Upload new track
 const getUploadTrack= async (req, res, next) => {
@@ -30,27 +29,28 @@ const postUploadTrack= (req, res, next) => {
 
     //Listen when a file is uploaded
     upload.single('track') (req, res, async (err) => {
-        //Get labels
-        const labels= await Label.find();
         //Get name
         const name= req.body.name;
         //Delete name
         delete req.body.name
-        //Get labels
-        const labels_ids= Object.keys(req.body);
-        console.log('Labels', labels_ids);
 
         //If error
         if(err){
+            //Flash message
             req.flash('trackMessage', err);
             res.locals.trackMessage= req.flash('trackMessage');
-            res.render('upload_track', {labels})
+
+            const labels= await Label.find();
+            res.render('upload_track', {labels});
         }
         //If no name
         else if(!name){
+            //Flash message
             req.flash('trackMessage', 'Write a name');
             res.locals.trackMessage= req.flash('trackMessage');
-            res.render('upload_track', {labels})
+            
+            const labels= await Label.find();
+            res.render('upload_track', {labels});
         }
         //If no errors, save in database
         else{
@@ -63,7 +63,6 @@ const postUploadTrack= (req, res, next) => {
             //Get db connection
             const db= getConnection();
             //Save in collections named tracks.files and tracks.chunks
-            //Different from tracks collection we created
             const bucket= new GridFSBucket(db, {
                 bucketName: 'tracks'                
             })
@@ -73,20 +72,38 @@ const postUploadTrack= (req, res, next) => {
             readableTrack.pipe(uploadStream);
 
             //If errors
-            uploadStream.on('error', () => {
+            uploadStream.on('error', async () => {
                 req.flash('trackMessage', 'Error uploading file');
                 res.locals.trackMessage= req.flash('trackMessage');
-                res.render('upload_track')
+
+                const labels= await Label.find();
+                res.render('upload_track', {labels});
             });
 
             //When finish
             uploadStream.on('finish', async () => {
+                //Get labels
+                var labels_ids= Object.keys(req.body);
+                labels_ids= labels_ids.map(ObjectId);
+
                 //Save in tracks model
                 const newTrack= new Track();
                 newTrack.name= name;
                 newTrack.file_id= uploadStream.id;
                 newTrack.labels_ids= labels_ids;
                 await newTrack.save();
+
+                //Add track id to labels
+                if(labels_ids){
+                    const db = getConnection();
+                    //$in to read array of ids
+                    //$addToSet to add value to tracks_ids
+                    //$each to add many values
+                    db.collection('labels').updateMany(
+                        {_id:{ $in: labels_ids }}, 
+                        {$addToSet:{ tracks_ids:{$each: [ObjectId(newTrack.id)] }}}
+                    );
+                }
 
                 req.flash('trackMessage', 'File uploaded successfully');
                 res.redirect('/profile');
@@ -112,19 +129,44 @@ const postEditTrack= async (req, res, next) => {
     
     //If no name
     if(!new_name){
-        const track= await Track.findById(req.params.id);
-        const labels= await Label.find();
+        //Flash message
         req.flash('trackMessage', 'Write a name');
         res.locals.trackMessage= req.flash('trackMessage');
-        res.render('edit_track', {track, labels})
+
+        const track= await Track.findById(req.params.id);
+        const labels= await Label.find();
+        res.render('edit_track', {track, labels});
     }
     //If no errors
     else{
+        //Get track
+        const track= await Track.findById(req.params.id);
+        //Get labels before and after edit
+        var before_labels_ids= track.labels_ids.map(String);
+        var after_labels_ids= Object.keys(req.body);
+
+        //console.log('before_labels_ids', before_labels_ids);
+        //console.log('after_labels_ids', after_labels_ids);
+        //console.log('--------------');
+
+        before_labels_ids.forEach(label => {
+            if(!after_labels_ids.includes(label)){
+                console.log('Remove track id from', label)
+            }
+        });
+
+        after_labels_ids.forEach(label => {
+            if(!before_labels_ids.includes(label)){
+                console.log('Add track id to', label)
+            }
+        });
+        
         //Get labels array
-        const labels= Object.keys(req.body);
-        //Update by id
-        await Track.findByIdAndUpdate(req.params.id, {name: new_name, labels_ids: labels});
-        res.redirect('/profile');
+        var labels_ids= Object.keys(req.body);
+        labels_ids= labels_ids.map(ObjectId);
+
+        await Track.findByIdAndUpdate(req.params.id, {name: new_name, labels_ids: labels_ids});
+        res.redirect('/profile');        
     }
 }
 
@@ -132,12 +174,18 @@ const postEditTrack= async (req, res, next) => {
 const deleteTrack= async (req, res, next) => {
     //Get track
     const track= await Track.findById(req.params.id);
-
-    //Delete from tracks.files and tracks.chunks
+    
+    //Delete file and chunks
     const db = getConnection();
-    db.collection('tracks.files').deleteOne({_id:track.file_id});
-    db.collection('tracks.chunks').deleteMany({files_id:track.file_id});
+    db.collection('tracks.files').deleteOne({ _id:track.file_id });
+    db.collection('tracks.chunks').deleteMany({ files_id:track.file_id });
 
+    //Delete track id from associated labels
+    db.collection('labels').updateMany(
+        { _id:{ $in: track.labels_ids }}, 
+        { $pull:{ tracks_ids:{ $in: [ObjectId(track.id)] }}}
+    );
+    
     //Find by id and delete
     await Track.findByIdAndDelete(req.params.id);
     res.redirect('/profile');
@@ -166,11 +214,11 @@ const getTrack= (req, res, next) => {
     //If error
     downloaded.on('error', () => {
         res.send('error');
-    })
+    });
     //When finish
     downloaded.on('end', () => {
         res.end();
-    })
+    });
 }
 
 module.exports= {
