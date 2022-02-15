@@ -1,7 +1,7 @@
 <%- layout('layouts/main.ejs') %>
 
 <h1>My music</h1>
-<a href="#" class="btn btn-primary">Play music</a>
+<a href="/play_music" class="btn btn-primary">Play music</a>
 
 <div class="row align-items-start">
     <!-- Songs column -->
@@ -10,18 +10,32 @@
             <h5 class="pt-2">All songs</h5>
             <!-- If no tracks -->
             <% if(tracks.length == 0){ %>
-            <div class="card" style="width: 18rem;">
-                <h5>Nothing here</h5>
-            </div>
+                <div class="card" style="width: 18rem;">
+                    <h5>Nothing here</h5>
+                </div>
             <!-- If tracks -->
             <% } else{ %>
-            <!-- Add all songs to playlist -->
-            <a href="#" class="btn btn-primary">Add all</a>
-            <ul class="list-group">
-                <% tracks.forEach(function(track){ %>
-                <li class="list-group-item"><%= track.name %><a href="#" class="btn btn-primary">Add to list</a></li>
-                <% }); %>
-            </ul>
+                <!-- Add all songs to playlist -->
+                <a href="#" class="btn btn-primary">Add all</a>
+                <!-- Songs -->
+                <ul class="list-group">
+                    <% tracks.forEach(function(track){ %>
+                        
+                        <% if(playlist.includes(track.name)){ %>
+                            <div>en playlist</div>
+                        <% } %>
+
+                        <li class="list-group-item">
+                            <%= track.name %>
+                            <!-- Add to playlist -->
+                            <form action="/add_track/<%= track.id %>" method="post" style="display: inline-block;">
+                                <button type="submit" style="background: rgba(255, 255, 255, 0); border: rgba(255, 255, 255, 0);">
+                                    <a class="btn btn-primary">Add to list</a>
+                                </button>
+                            </form>
+                        </li>
+                    <% }); %>
+                </ul>
             <% } %>
         </div>
     </div>
@@ -29,15 +43,30 @@
     <div class="col">
         <div class="container">
             <h5 class="pt-2">My list</h5>
-            <!-- Clear playlist -->
-            <a href="#" class="btn btn-primary">Clear playlist</a>
-            <ul class="list-group">
-                <li class="list-group-item">An item<a href="#" class="btn btn-primary">Remove from list</a></li>
-                <li class="list-group-item">A second item<a href="#" class="btn btn-primary">Remove from list</a></li>
-                <li class="list-group-item">A third item<a href="#" class="btn btn-primary">Remove from list</a></li>
-                <li class="list-group-item">A fourth item<a href="#" class="btn btn-primary">Remove from list</a></li>
-                <li class="list-group-item">And a fifth one<a href="#" class="btn btn-primary">Remove from list</a></li>
-            </ul>
+            <!-- If empty playlist -->
+            <% if(playlist.length == 0){ %>
+                <div class="card" style="width: 18rem;">
+                    <h5>No songs in playlist</h5>
+                </div>
+            <!-- If playlist -->
+            <% } else{ %>
+                <!-- Clear playlist -->
+                <a href="#" class="btn btn-primary">Clear playlist</a>
+                <!-- Playlist -->
+                <ul class="list-group">
+                    <% playlist.forEach(function(track){ %>
+                    <li class="list-group-item">
+                        <%= track.name %>
+                        <!-- Remove from playlist -->
+                        <form action="/remove_track/<%= track.id %>" method="post" style="display: inline-block;">
+                            <button type="submit" style="background: rgba(255, 255, 255, 0); border: rgba(255, 255, 255, 0);">
+                                <a class="btn btn-primary">Remove</a>
+                            </button>
+                        </form>
+                    </li>
+                    <% }); %>
+                </ul>
+            <% } %>
         </div>
     </div>
     <!-- Labels column -->
@@ -51,31 +80,30 @@
                 </div>
             <!-- If labels -->
             <% } else{ %>
-            <!-- Options with labels -->
-            
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="option" id="all" checked>
-                <label class="form-check-label" for="all">
-                    Include any song with these labels
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="option" id="only">
-                <label class="form-check-label" for="only">
-                    Include only songs with these labels
-                </label>
-            </div>
-            <ul class="list-group">
-                <% labels.forEach(function(label){ %>
-                <li class="list-group-item">
-                    <!-- Checkbox -->
-                    <input class="form-check-input" type="checkbox" id="<%= label.id %>">
-                        <label class="form-check-label" for="<%= label.id %>">
-                            <%= label.label %>
-                        </label>
-                </li>
-                <% }); %>
-            </ul>
+                <!-- Options with labels -->
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="option" id="all" checked>
+                    <label class="form-check-label" for="all">
+                        Include any song with these labels
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="option" id="only">
+                    <label class="form-check-label" for="only">
+                        Include only songs with these labels
+                    </label>
+                </div>
+                <ul class="list-group">
+                    <% labels.forEach(function(label){ %>
+                        <li class="list-group-item">
+                            <!-- Checkbox -->
+                            <input class="form-check-input" type="checkbox" id="<%= label.id %>">
+                                <label class="form-check-label" for="<%= label.id %>">
+                                    <%= label.label %>
+                                </label>
+                        </li>
+                    <% }); %>
+                </ul>
             <% } %>
         </div>
     </div>

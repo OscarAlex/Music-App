@@ -8,7 +8,7 @@ const trackSchema= new Schema ({
     labels_ids: Array
 });
 
-//The data is saved in a collection called labels
+//The data is saved in a collection called tracks
 module.exports= mongoose.model('tracks', trackSchema);
 
 /*

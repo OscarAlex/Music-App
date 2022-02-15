@@ -56,7 +56,7 @@ const postNewLabel = async (req, res, next) => {
             //$each to add many values
             db.collection('tracks').updateMany(
                 { _id:{ $in: tracks_ids }}, 
-                { $addToSet:{ labels_ids:{ $each: [ObjectId(newLabel.id)] }}}
+                { $addToSet:{ labels_ids: ObjectId(newLabel.id) }}
             );
         }
 
@@ -103,10 +103,37 @@ const postEditLabel= async (req, res, next) => {
     }
     //If no errors
     else{
-        //Get checked tracks
-        const tracks_ids= Object.keys(req.body);
+        //Get label
+        const label= await Label.findById(req.params.id);
+        //Get tracks before and after edit
+        var before_tracks_ids= label.tracks_ids.map(String);
+        var after_tracks_ids= Object.keys(req.body);
+        const db = getConnection();
 
-        await Label.findByIdAndUpdate(req.params.id, {label: new_label, tracks_ids:tracks_ids});
+        //Delete label id from associated tracks
+        before_tracks_ids.forEach(track_id => {
+            if(!after_tracks_ids.includes(track_id)){
+                db.collection('tracks').updateOne(
+                    { _id: ObjectId(track_id) }, 
+                    { $pull:{ labels_ids: ObjectId(label.id) }}
+                );
+            }
+        });
+
+        //Add label id to new tracks
+        after_tracks_ids.forEach(track_id => {
+            if(!before_tracks_ids.includes(track_id)){
+                db.collection('tracks').updateOne(
+                    { _id: ObjectId(track_id) }, 
+                    { $addToSet:{ labels_ids: ObjectId(label.id) }}
+                );
+            }
+        });
+
+        //Tracks array to ObjectId
+        after_tracks_ids= after_tracks_ids.map(ObjectId);
+
+        await Label.findByIdAndUpdate(req.params.id, {label: new_label, tracks_ids:after_tracks_ids});
         res.redirect('/profile');
     }
 }
@@ -120,7 +147,7 @@ const deleteLabel= async (req, res, next) => {
     const db = getConnection();
     db.collection('tracks').updateMany(
         { _id:{ $in: label.tracks_ids }}, 
-        { $pull:{ labels_ids:{ $in: [ObjectId(label.id)] }}}
+        { $pull:{ labels_ids: ObjectId(label.id) }}
     );
 
     //Find by id and delete

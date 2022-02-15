@@ -6,10 +6,13 @@ const passport= require('passport');
 
 const Label= require('../models/label');
 const Track= require('../models/track');
+const Playlist= require('../models/playlist-track');
 
 //Index page
-router.get('/', (req, res, next) => {
-    res.render('index');
+router.get('/', async (req, res, next) => {
+    //Get playlist
+    const playlist= await Playlist.find();
+    res.render('index', {playlist});
 });
 
 //Sign up
@@ -64,7 +67,8 @@ router.get('/music', async (req, res, next) => {
     //Search and send labels
     const labels= await Label.find();
     const tracks= await Track.find();
-    res.render('mymusic', {labels, tracks});
+    const playlist= await Playlist.find();
+    res.render('mymusic', {labels, tracks, playlist});
 });
 
 //Middleware

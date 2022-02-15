@@ -2,31 +2,66 @@
 
 <!-- If not authenticated -->
 <% if(!isAuthenticated){ %>
-<h1>Hello World</h1>
-Welcome to my app. Sign up and start to use it.
-<br>
-<audio controls>
-  <source src="http://localhost:3000/tracks/6202f0e69c668b9d527c8feb">
-</audio>
+  <h1>Hello World</h1>
+  Welcome to my app. Sign up and start to use it.
+  
+  <br>
+  <div id="player">
+    
+  </div>
+    
+  <script>
+    //Get playlist
+    const tracks =<%- JSON.stringify(playlist) %>;
+    
+    //Counter
+    var i= 0;
+    //Get div
+    const player= document.getElementById('player');
+    //Create elements
+    var audio= document.createElement('audio');
+    var source= document.createElement('source');
 
+    function playAudio(id){  
+      //Set up audio
+      audio.setAttribute('controls', '');
+      //Add track id to source
+      source.setAttribute('src', 'http://localhost:3000/tracks/'+id);
+      //Append elements
+      player.appendChild(audio);
+      audio.appendChild(source);
+      //Load and play audio
+      audio.load();
+      audio.play();
+    }
+    
+    //Play track in tracks
+    playAudio(tracks[i].file_id)
 
-<% } %>
+    //When finish
+    audio.onended = function() {
+      //console.log(tracks[i]);
+      //Counter
+      i++;
+      //console.log(tracks[i]);
+      playAudio(tracks[i].file_id)
+    }  
+  </script>
 
-<!-- If authenticated -->
-<% if(isAuthenticated){ %>
-<h1>Welcome <%= user.name %></h1>
+  <!-- If authenticated -->
+<% } else{ %>
+  <h1>Welcome <%= user.name %></h1>
 
-Here is my music player.
+  Here is my music player.
 
-<div class="card" style="width: 18rem;">
-  <img src="..." class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Music player</h5>
-      <p class="card-text">Title</p>
-      <a href="#" class="btn btn-primary"><<</a>
-      <a href="#" class="btn btn-primary">> ll</a>
-      <a href="#" class="btn btn-primary">>></a>
-    </div>
-</div>
-
+  <div class="card" style="width: 18rem;">
+    <img src="..." class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Music player</h5>
+        <p class="card-text">Title</p>
+        <a href="#" class="btn btn-primary"><<</a>
+        <a href="#" class="btn btn-primary">> ll</a>
+        <a href="#" class="btn btn-primary">>></a>
+      </div>
+  </div>
 <% } %>

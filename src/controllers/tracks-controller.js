@@ -101,7 +101,7 @@ const postUploadTrack= (req, res, next) => {
                     //$each to add many values
                     db.collection('labels').updateMany(
                         {_id:{ $in: labels_ids }}, 
-                        {$addToSet:{ tracks_ids:{$each: [ObjectId(newTrack.id)] }}}
+                        {$addToSet:{ tracks_ids: ObjectId(newTrack.id) }}
                     );
                 }
 
@@ -144,28 +144,34 @@ const postEditTrack= async (req, res, next) => {
         //Get labels before and after edit
         var before_labels_ids= track.labels_ids.map(String);
         var after_labels_ids= Object.keys(req.body);
+        const db = getConnection();
 
-        //console.log('before_labels_ids', before_labels_ids);
-        //console.log('after_labels_ids', after_labels_ids);
-        //console.log('--------------');
-
-        before_labels_ids.forEach(label => {
-            if(!after_labels_ids.includes(label)){
-                console.log('Remove track id from', label)
+        //Delete track id from associated labels
+        before_labels_ids.forEach(label_id => {
+            if(!after_labels_ids.includes(label_id)){
+                //console.log('Remove', track.id, 'from', label_id)
+                db.collection('labels').updateOne(
+                    { _id: ObjectId(label_id) }, 
+                    { $pull:{ tracks_ids: ObjectId(track.id) }}
+                );
             }
         });
 
-        after_labels_ids.forEach(label => {
-            if(!before_labels_ids.includes(label)){
-                console.log('Add track id to', label)
+        //Add track id to new labels
+        after_labels_ids.forEach(label_id => {
+            if(!before_labels_ids.includes(label_id)){
+                //console.log('Add', track.id, 'to', label_id)
+                db.collection('labels').updateOne(
+                    { _id: ObjectId(label_id) }, 
+                    { $addToSet:{ tracks_ids: ObjectId(track.id) }}
+                );
             }
         });
         
-        //Get labels array
-        var labels_ids= Object.keys(req.body);
-        labels_ids= labels_ids.map(ObjectId);
+        //Labels array to ObjectId
+        after_labels_ids= after_labels_ids.map(ObjectId);
 
-        await Track.findByIdAndUpdate(req.params.id, {name: new_name, labels_ids: labels_ids});
+        await Track.findByIdAndUpdate(req.params.id, {name: new_name, labels_ids: after_labels_ids});
         res.redirect('/profile');        
     }
 }
@@ -183,7 +189,7 @@ const deleteTrack= async (req, res, next) => {
     //Delete track id from associated labels
     db.collection('labels').updateMany(
         { _id:{ $in: track.labels_ids }}, 
-        { $pull:{ tracks_ids:{ $in: [ObjectId(track.id)] }}}
+        { $pull:{ tracks_ids: ObjectId(track.id) }}
     );
     
     //Find by id and delete

@@ -1,7 +1,17 @@
 const express= require('express');
 const router= express.Router();
-const {getNewLabel}= require('../controllers/player-controllers');
+const { addTrack,
+        removeTrack,
+        playMusic
+        }= require('../controllers/player-controllers');
 
-router.get('/add_label', getNewLabel);
+//Add track to playlist
+router.post('/add_track/:id', addTrack);
+
+//Remove track from playlist
+router.post('/remove_track/:id', removeTrack);
+
+//Play list
+router.get('/play_music', playMusic);
 
 module.exports= router;
