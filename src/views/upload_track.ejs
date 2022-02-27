@@ -1,40 +1,55 @@
 <%- layout('layouts/main.ejs') %>
 
-<h1>Upload song</h1>
-
-<div class="col-sm-3">
-    <form action="/upload_track" method="post" enctype="multipart/form-data">
-        <div class="mb-3">
+<div class="card p-4 mx-auto" style="width: 28rem;"> 
+    <h3 class="card-title text-center">Upload song</h3>
+    <div class="card-body">
+        <form action="/upload_track" method="post" enctype="multipart/form-data">
             <!-- File -->
-            <label class="form-label">Select file</label>
-            <input type="file" class="form-control" name="track" id="upload-file">
+            <div class="mb-3">
+                <label class="form-label">Select file</label>
+                <input type="file" class="form-control" name="track" id="upload-file">
+            </div>
             <!-- Track name -->
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control" name="name" id="filename">
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" name="name" id="filename">
+            </div>
             <!-- Labels -->
-            <label class="form-label">Add labels</label>
-            <!-- If no labels -->
-            <% if(labels.length == 0){ %>
-                <div class="card" style="width: 18rem;">
-                    <h5>No labels yet</h5>
+            <% if(labels.length == 0){ %> <!-- If no labels -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">No labels yet</h5>
+                        <a href="/add_label" class="btn btn-primary">Add new label</a>
+                    </div>
                 </div>
-            <!-- If labels -->
-            <% } else{ %>
-                <ul class="list-group">
+            <% } else{ %>  <!-- If labels -->
+                <div class="list-group mb-3">
+                    <label class="form-label">Add labels</label>
                     <% labels.forEach(function(label){ %>
-                    <li class="list-group-item">
-                        <!-- Checkbox -->
-                        <input class="form-check-input" type="checkbox" name="<%= label.id %>" id="<%= label.id %>">
-                            <label class="form-check-label" for="<%= label.id %>">
-                                <%= label.label %>
-                            </label>
-                    </li>
+                    <label class="list-group-item" id="<%= label.id %>-label">
+                        <input class="form-check-input me-1" type="checkbox" name="<%= label.id %>" id="<%= label.id %>" onclick="check(this.id)" style="display:none">
+                        <%= label.label %>
+                    </label>
                     <% }); %>
-                </ul>
+                </div>
+            <script> 
+                function check(id) {
+                    var label= document.getElementById(id+"-label")
+                    var checkbox= document.getElementById(id)
+                    if(checkbox.checked){
+                        label.classList.add("list-group-item","active")
+                        console.log("checked")
+                    }
+                    else{
+                        console.log("unchecked")
+                        label.classList.remove("active")   
+                    }
+                }
+            </script>
             <% } %>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 </div>
 
 <script>

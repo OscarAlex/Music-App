@@ -1,18 +1,79 @@
 <%- layout('layouts/main.ejs') %>
 
 <!-- If not authenticated -->
-<% if(!isAuthenticated){ %>
-  <h1>Hello World</h1>
-  Welcome to my app. Sign up and start to use it.
-  
+<!-- <% if(!isAuthenticated){ %> -->
+<!-- <% } else{ %> -->
+<!-- <% } %> -->
+  <h1 class="text-center">Welcome to PlayB</h1>
   <br>
-  <div id="player">
-    
+  <div class="px-5">
+    <figure class="border p-5">
+        <h3>Upload your songs</h3>
+    </figure>
+  
+    <figure class="border p-5 text-end">
+        <h3>Associate them with labels</h3>
+    </figure>
   </div>
+  <!-- If authenticated -->
+
+  <h1 class="text-center" id="playing">Now playing</h1>
+  <br>
+  <!-- Player -->
+  <div class="card p-2 mx-auto" style="width: 28rem;">
+      <div class="card-body text-center">
+        <h5 class="card-title" id="title">Music player</h5>
+        <div id="player">
     
+        </div>
+        <!-- Back button -->
+        <button type="button" class="btn btn-secondary btn-sq-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-skip-backward-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.79-2.907L8.5 7.028V5.5a.5.5 0 0 0-.79-.407L5 7.028V5.5a.5.5 0 0 0-1 0v5a.5.5 0 0 0 1 0V8.972l2.71 1.935a.5.5 0 0 0 .79-.407V8.972l2.71 1.935A.5.5 0 0 0 12 10.5v-5a.5.5 0 0 0-.79-.407z"/>
+          </svg>
+        </button>
+        <!-- Play/Pause button -->
+        <button type="button" class="btn btn-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-play-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+          </svg>
+        </button>
+        <button type="button" class="btn btn-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-pause-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.25 5C5.56 5 5 5.56 5 6.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C7.5 5.56 6.94 5 6.25 5zm3.5 0c-.69 0-1.25.56-1.25 1.25v3.5a1.25 1.25 0 1 0 2.5 0v-3.5C11 5.56 10.44 5 9.75 5z"/>
+          </svg>
+        </button>
+        <!-- Forward button -->
+        <button type="button" class="btn btn-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-skip-forward-circle-fill" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.79 5.093A.5.5 0 0 0 4 5.5v5a.5.5 0 0 0 .79.407L7.5 8.972V10.5a.5.5 0 0 0 .79.407L11 8.972V10.5a.5.5 0 0 0 1 0v-5a.5.5 0 0 0-1 0v1.528L8.29 5.093a.5.5 0 0 0-.79.407v1.528L4.79 5.093z"/>
+          </svg>
+        </button>
+      </div>
+  </div>
+  <!-- List -->
+  <div class="card p-2 mx-auto" style="width: 28rem;">
+    <div class="card-body">
+        <h5 class="card-title text-center">My playlist</h5>
+        <% if(playlist.length == 0){ %> <!-- If empty playlist -->
+            <div class="card">
+                <div class="card-body text-center">
+                  <h5 class="card-title">No songs in playlist</h5>
+                </div>
+            </div>
+        <% } else{ %> <!-- If playlist -->
+          <ul class="list-group">
+                <% playlist.forEach(function(track){ %>
+                  <li class="list-group-item" id="<%= track.id %>" onclick="playSelected(this.id)"><%= track.name %></li>
+                <% }); %>
+          </ul>
+        <% } %>
+    </div>
+</div>
+
   <script>
     //Get playlist
-    const tracks =<%- JSON.stringify(playlist) %>;
+    const tracks = <%- JSON.stringify(playlist) %>;
     
     //Counter
     var i= 0;
@@ -22,46 +83,49 @@
     var audio= document.createElement('audio');
     var source= document.createElement('source');
 
-    function playAudio(id){  
+    //Funtion to play
+    function playAudio(track){  
       //Set up audio
       audio.setAttribute('controls', '');
       //Add track id to source
-      source.setAttribute('src', 'http://localhost:3000/tracks/'+id);
+      source.setAttribute('src', 'http://localhost:3000/tracks/'+track.file_id);
       //Append elements
       player.appendChild(audio);
       audio.appendChild(source);
       //Load and play audio
       audio.load();
       audio.play();
-    }
-    
-    //Play track in tracks
-    playAudio(tracks[i].file_id)
 
+      //Set name
+      document.getElementById("title").innerHTML = track.name;
+      //Active row if play
+      document.getElementById(track._id).classList.add("active");
+    }
+    //Play track
+    playAudio(tracks[i])
     //When finish
     audio.onended = function() {
-      //console.log(tracks[i]);
-      //Counter
-      i++;
-      //console.log(tracks[i]);
-      playAudio(tracks[i].file_id)
-    }  
+      //Check if playlist is over
+      if(i < tracks.length-1){
+        //Deactive row when finish
+        document.getElementById(tracks[i]._id).classList.remove("active");
+        //Add counter and play
+        i++;
+        playAudio(tracks[i])
+      }
+      else{
+        document.getElementById("playing").innerHTML = "Playlist has ended";
+      }
+    }
+
+    //On click
+    function playSelected(id){
+      console.log('Pause current audio')
+      console.log('Deactivate row')
+      //I suppose I must change the counter. Add an index to the each track and then change the counter and play the actual
+      //index. These for when the user selects a song from playlist in a different order.
+      console.log('')
+      console.log('Search file by id in tracks array')
+      console.log('function playAudio')
+    }
   </script>
-
-  <!-- If authenticated -->
-<% } else{ %>
-  <h1>Welcome <%= user.name %></h1>
-
-  Here is my music player.
-
-  <div class="card" style="width: 18rem;">
-    <img src="..." class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Music player</h5>
-        <p class="card-text">Title</p>
-        <a href="#" class="btn btn-primary"><<</a>
-        <a href="#" class="btn btn-primary">> ll</a>
-        <a href="#" class="btn btn-primary">>></a>
-      </div>
-  </div>
-<% } %>

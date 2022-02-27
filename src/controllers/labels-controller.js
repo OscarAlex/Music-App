@@ -60,7 +60,7 @@ const postNewLabel = async (req, res, next) => {
             );
         }
 
-        res.redirect('/profile');
+        res.redirect('/music');
     }
 }
 

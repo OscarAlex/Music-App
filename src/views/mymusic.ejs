@@ -1,109 +1,152 @@
 <%- layout('layouts/main.ejs') %>
 
-<h1>My music</h1>
-<a href="/play_music" class="btn btn-primary">Play music</a>
+<!-- Get file_ids from tracks in playlist -->
+<% var playlist_ids= []; %>
+<% playlist.forEach(function(track){ %>
+    <% playlist_ids.push(track.file_id.toString()) %>
+<% }); %>
 
-<div class="row align-items-start">
+<h1 class="text-center">My music</h1>
+<div class="card-group p-4">
     <!-- Songs column -->
-    <div class="col">
-        <div class="container">
-            <h5 class="pt-2">All songs</h5>
-            <!-- If no tracks -->
-            <% if(tracks.length == 0){ %>
-                <div class="card" style="width: 18rem;">
-                    <h5>Nothing here</h5>
+    <div class="card p-2">
+        <div class="card-body">
+            <h5 class="card-title text-center">All songs</h5>
+            <!-- Add all songs -->
+            <div class="mb-2 text-center input-group-sm">
+                <a href="/add_all" class="btn btn-secondary btn-sm">Add all songs</a>
+            </div>
+            <% if(tracks.length == 0){ %> <!-- If no tracks -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Any song yet</h5>
+                        <a href="/upload_track" class="btn btn-primary">Upload new song</a>
+                    </div>
                 </div>
-            <!-- If tracks -->
-            <% } else{ %>
-                <!-- Add all songs to playlist -->
-                <a href="#" class="btn btn-primary">Add all</a>
-                <!-- Songs -->
-                <ul class="list-group">
+            <% } else if(playlist.length == tracks.length){ %> <!-- If all tracks in playlist -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">All songs in playlist</h5>
+                    </div>
+                </div>
+            <% } else{ %> <!-- If tracks -->
+                <div class="list-group">
                     <% tracks.forEach(function(track){ %>
-                        
-                        <% if(playlist.includes(track.name)){ %>
-                            <div>en playlist</div>
-                        <% } %>
-
-                        <li class="list-group-item">
-                            <%= track.name %>
-                            <!-- Add to playlist -->
+                        <% if(!playlist_ids.includes(track.file_id.toString())){ %> <!-- If track in playlist, not show -->
                             <form action="/add_track/<%= track.id %>" method="post" style="display: inline-block;">
-                                <button type="submit" style="background: rgba(255, 255, 255, 0); border: rgba(255, 255, 255, 0);">
-                                    <a class="btn btn-primary">Add to list</a>
-                                </button>
+                                <label class="list-group-item" id="<%= track.id %>-track">
+                                    <input class="form-check-input me-1" type="submit" id="<%= track.id %>" onclick="check(this.id)" style="display:none">
+                                    <%= track.name %>
+                                </label>
                             </form>
-                        </li>
+                        <% } %>
                     <% }); %>
-                </ul>
-            <% } %>
+                </div>
+            <% } %> 
         </div>
     </div>
-    <!-- Player column -->
-    <div class="col">
-        <div class="container">
-            <h5 class="pt-2">My list</h5>
-            <!-- If empty playlist -->
-            <% if(playlist.length == 0){ %>
-                <div class="card" style="width: 18rem;">
-                    <h5>No songs in playlist</h5>
+    <!-- Playlist column -->
+    <div class="card p-2">
+        <div class="card-body">
+            <h5 class="card-title text-center">My playlist</h5>
+            <!-- Clear playlist -->
+            <div class="mb-2 text-center input-group-sm">
+                <a href="/clear_playlist" class="btn btn-secondary btn-sm">Clear playlist</a>
+                <a href="/" class="btn btn-primary btn-sm">Play music</a>
+            </div>
+            <% if(playlist.length == 0){ %> <!-- If empty playlist -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <% if(tracks.length == 0){ %>
+                            <h5 class="card-title">Upload your songs to add to playlist</h5>
+                        <% } else{ %>
+                            <h5 class="card-title">No songs in playlist</h5>
+                        <% } %>
+                    </div>
                 </div>
-            <!-- If playlist -->
-            <% } else{ %>
-                <!-- Clear playlist -->
-                <a href="#" class="btn btn-primary">Clear playlist</a>
-                <!-- Playlist -->
-                <ul class="list-group">
+            <% } else{ %> <!-- If playlist -->
+                <div class="list-group">
                     <% playlist.forEach(function(track){ %>
-                    <li class="list-group-item">
-                        <%= track.name %>
-                        <!-- Remove from playlist -->
                         <form action="/remove_track/<%= track.id %>" method="post" style="display: inline-block;">
-                            <button type="submit" style="background: rgba(255, 255, 255, 0); border: rgba(255, 255, 255, 0);">
-                                <a class="btn btn-primary">Remove</a>
-                            </button>
+                            <label class="list-group-item" id="<%= track.id %>-track">
+                                <input class="form-check-input me-1" type="submit" id="<%= track.id %>" onclick="check(this.id)" style="display:none">
+                                <%= track.name %>
+                            </label>
                         </form>
-                    </li>
                     <% }); %>
-                </ul>
+                </div>
             <% } %>
         </div>
     </div>
     <!-- Labels column -->
-    <div class="col">
-        <div class="container">
-            <h5 class="pt-2">My labels</h5>
-            <!-- If no labels -->
-            <% if(labels.length == 0){ %>
-                <div class="card" style="width: 18rem;">
-                    <h5>No labels yet</h5>
-                </div>
-            <!-- If labels -->
-            <% } else{ %>
-                <!-- Options with labels -->
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="option" id="all" checked>
-                    <label class="form-check-label" for="all">
-                        Include any song with these labels
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="option" id="only">
-                    <label class="form-check-label" for="only">
-                        Include only songs with these labels
-                    </label>
-                </div>
-                <ul class="list-group">
-                    <% labels.forEach(function(label){ %>
-                        <li class="list-group-item">
-                            <!-- Checkbox -->
-                            <input class="form-check-input" type="checkbox" id="<%= label.id %>">
-                                <label class="form-check-label" for="<%= label.id %>">
-                                    <%= label.label %>
-                                </label>
-                        </li>
-                    <% }); %>
-                </ul>
+    <div class="card p-2">
+        <div class="card-body">
+            <h5 class="card-title text-center">My labels</h5>
+            <form action="/add_with_labels" method="post">
+                <% if(labels.length == 0){ %> <!-- If no labels -->
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">No labels yet</h5>
+                            <a href="/add_label" class="btn btn-primary">Add new label</a>
+                        </div>
+                    </div>
+                <% } else{ %>  <!-- If labels -->
+                    <!-- Options with labels -->
+                    <div class="mb-2 text-center input-group-sm">
+                        <input type="radio" class="btn-check" name="options" id="any" value="any" checked>
+                        <label class="btn btn-outline-secondary" for="any"><strong>Any</strong> with these labels</label>
+                        
+                        <input type="radio" class="btn-check" name="options" id="only" value="only">
+                        <label class="btn btn-outline-secondary" for="only"><strong>Only</strong> with these labels</label>
+                    </div>
+                    
+                    <!-- Labels list -->
+                    <div class="list-group">
+                        <% labels.forEach(function(label){ %>
+                        <label class="list-group-item" id="<%= label.id %>-label">
+                            <input class="form-check-input me-1" type="checkbox" name="<%= label.id %>" id="<%= label.id %>" onclick="check(this.id)" style="display:none"> <!-- style="display:none" -->
+                            <%= label.label %>
+                        </label>
+                        <% }); %>
+                    </div>
+
+                    <!-- Apply filtrer -->
+                    <br>
+                    <button class="btn btn-secondary btn-sm" type="submit">Apply filtrer</button>
+            </form>
+
+                <script>
+                    //When check label
+                    function check(id) {
+                        //Active row
+                        var row= document.getElementById(id+"-label")
+                        var checkbox= document.getElementById(id)
+                        if(checkbox.checked){
+                            row.classList.add("list-group-item","active")
+                            console.log("checked")
+                        }
+                        else{
+                            console.log("unchecked")
+                            row.classList.remove("active")   
+                        }
+
+                        // //Get label object by id
+                        // const labels = <%- JSON.stringify(labels) %>;
+                        // var tracks_of_label;
+                        // labels.forEach(label => {
+                        //     if(label["_id"].toString() == id ){
+                        //         tracks_of_label= label["tracks_ids"];
+                        //     }
+                        // });
+                        // //window.location.href = "/add_with/"+ id;
+                        // console.log(tracks_of_label);
+                        
+                        // //Get songs_ids list
+
+                        // //If song not in playlist, add
+
+                    }
+                </script>
             <% } %>
         </div>
     </div>

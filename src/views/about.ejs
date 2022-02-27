@@ -1,0 +1,49 @@
+<%- layout('layouts/main.ejs') %>
+
+<div class="card p-4 mx-auto" style="width: 30rem;"> 
+    <h3 class="card-title text-center">Hey there!</h3>
+    <div class="card-body">
+        <h5 class="text-center">Hi</h5>
+        An app as cool as this one comes with a few disadvantages:
+        <ul>
+            <li>When you play your music, you can´t move forward or backward. This is because the song 
+                is being downloaded as long as you hear it.
+            </li>
+            <li>There's a limit in the storage from MongoDB. This is because the free version was used.
+                And I´m not talking about just your profile. It includes every single song in the world
+                uploaded to this page.
+            </li>
+        </ul>
+        This app was developed using JS, NodeJS, MongoDB, Express, Multer, EJS and Bootstrap.
+
+        <br><br>
+        <h5 class="text-center">But wait</h5>
+        This is just the first version. I hope to develop again this app implementing new functionalities:
+        <ul>
+            <li>Together with the actual file input, you will be able to insert a YT link to download the song directly from there.</li>
+            <li>A nigh mode.</li>
+            <li>A simplified interface.</li>
+            <li>A random mode to play your music.</li>
+        </ul>
+        The new version will be developed implementing React and JQuery.
+
+        <br><br>
+        Links to git, website, linkedln
+    </div>
+</div>
+
+<script>
+    //Get fields
+    var fileInput = document.getElementById('upload-file');
+    var nameInput = document.getElementById('filename');
+
+    //The change event gives us the input it occurred in 
+    fileInput.addEventListener('change', (event) => {
+        //Get input
+        var input = event.srcElement;
+        //Get name from file and remove extension
+        var fileName = input.files[0].name.split(".")[[0]];
+        //Write filename in Name field
+        nameInput.value = fileName;
+    });
+</script>

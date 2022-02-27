@@ -15,6 +15,12 @@ router.get('/', async (req, res, next) => {
     res.render('index', {playlist});
 });
 
+//About
+router.get('/about', (req, res, next) => {
+    req.logout();
+    res.render('about');
+});
+
 //Sign up
 router.get('/signup', isNotAuthenticated, (req, res, next) => {
     res.render('signup');

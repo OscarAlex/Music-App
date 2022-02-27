@@ -1,40 +1,58 @@
 <%- layout('layouts/main.ejs') %>
 
-<h1>Edit song info</h1>
-
-<div class="col-sm-3">
-    <form action="/edit_track/<%= track._id %>?_method=PUT" method="post">
-        <input type="hidden" name="_method" value="PUT">
-        <div class="mb-3">
-            <!-- Name -->
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control" name="name" value="<%= track.name %>">
+<div class="card p-4 mx-auto" style="width: 28rem;"> 
+    <h3 class="card-title text-center">Edit song</h3>
+    <div class="card-body">
+        <form action="/edit_track/<%= track._id %>?_method=PUT" method="post">
+            <input type="hidden" name="_method" value="PUT">
+            <!-- Track name -->
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" name="name" value="<%= track.name %>">
+            </div>
             <!-- Labels -->
-            <label class="form-label">Edit labels</label>
-            <!-- If no labels -->
-            <% if(labels.length == 0){ %>
-                <div class="card" style="width: 18rem;">
-                    <h5>No labels yet</h5>
+            <% if(labels.length == 0){ %> <!-- If no labels -->
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">No labels yet</h5>
+                        <a href="/add_label" class="btn btn-primary">Add new label</a>
+                    </div>
                 </div>
-            <!-- If labels -->
-            <% } else{ %>
-                <ul class="list-group">
+            <% } else{ %>  <!-- If labels -->
+                <div class="list-group mb-3">
+                    <label class="form-label">Edit labels</label>
                     <% labels.forEach(function(label){ %>
-                    <li class="list-group-item">
                         <!-- If label in track -->
                         <% if(track.labels_ids && track.labels_ids.includes(label.id)){ %>
-                            <input class="form-check-input" type="checkbox" name="<%= label.id %>" id="<%= label.id %>" checked>
-                        <% }else{ %>
-                            <input class="form-check-input" type="checkbox" name="<%= label.id %>" id="<%= label.id %>">
-                        <% } %>
-                            <label class="form-check-label" for="<%= label.id %>">
+                            <label class="list-group-item active" id="<%= label.id %>-track">
+                                <input class="form-check-input me-1" type="checkbox" name="<%= label.id %>" id="<%= label.id %>" onclick="check(this.id)" style="display:none" checked>
                                 <%= label.label %>
                             </label>
-                    </li>
+                            <% } else{ %>
+                                <label class="list-group-item" id="<%= label.id %>-track">
+                                    <input class="form-check-input me-1" type="checkbox" name="<%= label.id %>" id="<%= label.id %>" onclick="check(this.id)" style="display:none">
+                                    <%= label.label %>
+                                </label>
+                            <% } %>
                     <% }); %>
-                </ul>
+                </div>
+            <script> 
+                function check(id) {
+                    var label= document.getElementById(id+"-track")
+                    var checkbox= document.getElementById(id)
+                    if(checkbox.checked){
+                        label.classList.add("list-group-item","active")
+                        console.log("checked")
+                    }
+                    else{
+                        console.log("unchecked")
+                        label.classList.remove("active")   
+                    }
+                }
+            </script>
             <% } %>
-        </div>        
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 </div>
+

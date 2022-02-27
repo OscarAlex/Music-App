@@ -106,7 +106,7 @@ const postUploadTrack= (req, res, next) => {
                 }
 
                 req.flash('trackMessage', 'File uploaded successfully');
-                res.redirect('/profile');
+                res.redirect('/music');
             });
         }        
     });
