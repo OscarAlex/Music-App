@@ -4,6 +4,7 @@ const {Schema}= mongoose;
 
 const trackSchema= new Schema ({
     name: String,
+    duration: Number,
     file_id: ObjectId,
     labels_ids: Array
 });

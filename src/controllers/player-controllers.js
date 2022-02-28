@@ -11,6 +11,7 @@ const addTrack = async (req, res, next) => {
     //Save track in playlist
     const newPlay= new Playlist();
     newPlay.name= track.name;
+    newPlay.duration= track.duration;
     newPlay.file_id= track.file_id;
     newPlay.labels_ids= track.labels_ids;
     await newPlay.save();
@@ -30,9 +31,9 @@ const addAllSongs= async (req, res, next) => {
     //Clear playlist
     await Playlist.deleteMany();
     //Get all tracks
-    const Object = await Track.find();
+    const tracks = await Track.find();
     //Pass all tracks to playlist
-    await Playlist.insertMany(Object);
+    await Playlist.insertMany(tracks);
 
     res.redirect('/music');
 }
@@ -49,38 +50,73 @@ const addWithLabels= async (req, res, next) => {
     const option= req.body.options;
     //Delete option
     delete req.body.options
-
     //Get labels
     var labels= Object.keys(req.body);
-    //labels= labels.map(ObjectId);
-    //console.log(labels);
+
+    //Add tracks ids from each label
+    var tracks_ids= [];
+    for (const id of labels) {
+        const label= await Label.findById(id);
+        tracks_ids.push(label.tracks_ids);
+    }
+    //Get size
+    const selected_labels= tracks_ids.length;
+    //Flat list and convert to String
+    tracks_ids= tracks_ids.flat().map(String);
     
-    //Get tracks_ids from labels
-    var tracks= await getTracksIds(labels)
-    console.log(tracks);
     
+    //Get songs according to option
+    var selected_tracks= [];
     //Preserve the uniques
     if(option == 'any'){
-
+        //Get unique tracks 
+        selected_tracks = await Track.find({ '_id': { $in: tracks_ids } });
     }
-    //Preserve the repeateds
+    //Preserve the duplicates
     else{
-
+        //Create dictionary with counter and id
+        var uniq = tracks_ids
+            .map((id) => {
+            return {
+            count: 1,
+            id: id
+            }
+        })
+        //??????
+        .reduce((a, b) => {
+            a[b.id] = (a[b.id] || 0) + b.count
+            return a
+        }, {})
+        //Get tracks repeated [selected labels] times
+        const duplicates = Object.keys(uniq).filter((a) => uniq[a] == selected_labels);
+        //Get duplicate tracks 
+        selected_tracks = await Track.find({ '_id': { $in: duplicates } });
     }
     
-    res.redirect('/music');
-}
-
-function getTracksIds(labels_arr){
-    //Tracks list
-    var tracks= []
-
-    labels_arr.forEach(async id => {
-        const label= await Label.findById(id);
-        console.log(label);
-        tracks.push(label.tracks_ids);
+    //Get files ids
+    var files_ids= [];
+    selected_tracks.forEach(function(track){
+        files_ids.push(track.file_id.toString())
     });
-    return tracks
+
+    //Get files_ids from playlist
+    const playlist = await Playlist.find();
+    var playlist_ids= [];
+    playlist.forEach(function(track){
+        playlist_ids.push(track.file_id.toString())
+    });
+
+    //If not track in playlist, add
+    files_ids.forEach(async id => {
+        if(!playlist_ids.includes(id)){
+            //Get all tracks
+            const track_to_add = await Track.find({ 'file_id': id });
+            //Pass all tracks to playlist
+            await Playlist.insertMany(track_to_add);
+        }
+    });
+    
+    res.redirect('/music');
 }
 
 module.exports= {

@@ -14,6 +14,10 @@
                 <label class="form-label">Name</label>
                 <input type="text" class="form-control" name="name" id="filename">
             </div>
+            <!-- Duration -->
+            <div class="mb-3" style="display: none;">
+                <input type="text" class="form-control" name="duration" id="duration" readonly>
+            </div>
             <!-- Labels -->
             <% if(labels.length == 0){ %> <!-- If no labels -->
                 <div class="card">
@@ -52,10 +56,15 @@
     </div>
 </div>
 
+<audio id='audio'></audio>
+
 <script>
+    //Add name of file
     //Get fields
     var fileInput = document.getElementById('upload-file');
     var nameInput = document.getElementById('filename');
+    var audio = document.getElementById('audio');
+    var dur = document.getElementById('duration');
 
     //The change event gives us the input it occurred in 
     fileInput.addEventListener('change', (event) => {
@@ -65,5 +74,26 @@
         var fileName = input.files[0].name.split(".")[[0]];
         //Write filename in Name field
         nameInput.value = fileName;
+    });
+
+    //Get duration
+    //Add canplaythrough event to audio to get duration
+    var duration =0;
+    audio.addEventListener('canplaythrough', function(e){
+        //Add duration to hidden field
+        duration = Math.round(e.currentTarget.duration);
+        dur.value = duration;
+        URL.revokeObjectURL(obUrl);
+    });
+
+    //When select a file, create an ObjectURL with the file and add it to audio
+    var obUrl;
+    fileInput.addEventListener('change', function(e){
+        var file = e.currentTarget.files[0];
+        //check file extension for audio/video type
+        if(file.name.match(/\.(avi|mp3|mp4|mpeg|ogg)$/i)){
+        obUrl = URL.createObjectURL(file);
+        audio.setAttribute('src', obUrl);
+        }
     });
 </script>

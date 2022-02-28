@@ -4,6 +4,7 @@ const {GridFSBucket, ObjectId}= require('mongodb');
 const {Readable}= require('stream');
 const Label= require('../models/label');
 const Track= require('../models/track');
+const Playlist= require('../models/playlist-track');
 
 //Upload new track
 const getUploadTrack= async (req, res, next) => {
@@ -29,10 +30,12 @@ const postUploadTrack= (req, res, next) => {
 
     //Listen when a file is uploaded
     upload.single('track') (req, res, async (err) => {
-        //Get name
+        //Get name and duration
         const name= req.body.name;
-        //Delete name
+        const duration= req.body.duration;
+        //Delete name and duration
         delete req.body.name
+        delete req.body.duration
 
         //If error
         if(err){
@@ -89,6 +92,7 @@ const postUploadTrack= (req, res, next) => {
                 //Save in tracks model
                 const newTrack= new Track();
                 newTrack.name= name;
+                newTrack.duration= duration;
                 newTrack.file_id= uploadStream.id;
                 newTrack.labels_ids= labels_ids;
                 await newTrack.save();
@@ -171,7 +175,10 @@ const postEditTrack= async (req, res, next) => {
         //Labels array to ObjectId
         after_labels_ids= after_labels_ids.map(ObjectId);
 
+        //Update tracks and playlist
         await Track.findByIdAndUpdate(req.params.id, {name: new_name, labels_ids: after_labels_ids});
+        await Playlist.findByIdAndUpdate(req.params.id, {name: new_name, labels_ids: after_labels_ids});
+
         res.redirect('/profile');        
     }
 }
@@ -192,8 +199,9 @@ const deleteTrack= async (req, res, next) => {
         { $pull:{ tracks_ids: ObjectId(track.id) }}
     );
     
-    //Find by id and delete
+    //Delete from tracks and playlist
     await Track.findByIdAndDelete(req.params.id);
+    await Playlist.findByIdAndDelete(req.params.id);
     res.redirect('/profile');
 }
 
