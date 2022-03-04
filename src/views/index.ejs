@@ -4,7 +4,7 @@
 <% if(!isAuthenticated){ %>
   <h1 class="text-center">Welcome to PlayB</h1>
   <br>
-  <div class="px-5">
+  <div style="max-width:100vw">
     <figure class="border p-5">
         <h3>Upload your songs</h3>
     </figure>
@@ -27,7 +27,7 @@
   <h1 class="text-center" id="playing">Now playing</h1>
   <br>
   <!-- Player -->
-  <div class="card p-2 mx-auto" style="width: 28rem;">
+  <div class="card p-2 mx-auto" style="max-width: 28rem;">
       <div class="card-body text-center">
         <h5 class="card-title" id="title">Music player</h5>
         <!-- Div to add audio -->
@@ -73,7 +73,7 @@
       </div>
   </div>
   <!-- List -->
-  <div class="card p-2 mx-auto" style="width: 28rem;">
+  <div class="card p-2 mx-auto" style="max-width: 28rem;">
     <div class="card-body">
         <h5 class="card-title text-center">My playlist</h5>
         <% if(playlist.length == 0){ %> <!-- If empty playlist -->
