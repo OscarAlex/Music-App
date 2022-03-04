@@ -1,6 +1,6 @@
 module.exports= {
     mongodb: {
-        URI: 'mongodb://localhost:27017/node-login-passport-local'
+        URI: 'mongodb+srv://Geo:Test123@test.4hddv.gcp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
     },
     session_s: {
         secret: 'IntruderalertRedSpyInTheBase'
