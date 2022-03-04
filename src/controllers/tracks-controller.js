@@ -30,10 +30,22 @@ const postUploadTrack= (req, res, next) => {
 
     //Listen when a file is uploaded
     upload.single('track') (req, res, async (err) => {
-        //Get name and duration
+        //Get name, extension and duration
         const name= req.body.name;
         const duration= req.body.duration;
-        //Delete name and duration
+        var extension;
+        try {
+            extension= req.file.originalname.split('.').slice(-1)[0];
+        } catch (error) {
+            //Flash message
+            req.flash('trackMessage', 'Upload a file');
+            res.locals.trackMessage= req.flash('trackMessage');
+
+            const labels= await Label.find();
+            res.render('upload_track', {labels});
+        }
+        
+        //Delete vars
         delete req.body.name
         delete req.body.duration
 
@@ -43,6 +55,15 @@ const postUploadTrack= (req, res, next) => {
             req.flash('trackMessage', err);
             res.locals.trackMessage= req.flash('trackMessage');
 
+            const labels= await Label.find();
+            res.render('upload_track', {labels});
+        }
+        //If no audio extension
+        else if(!['avi','mp3','mpeg','ogg'].includes(extension)){
+            //Flash message
+            req.flash('trackMessage', 'Upload a valid file');
+            res.locals.trackMessage= req.flash('trackMessage');
+            
             const labels= await Label.find();
             res.render('upload_track', {labels});
         }
@@ -110,7 +131,7 @@ const postUploadTrack= (req, res, next) => {
                 }
 
                 req.flash('trackMessage', 'File uploaded successfully');
-                res.redirect('/music');
+                res.redirect('/profile');
             });
         }        
     });
@@ -235,11 +256,18 @@ const getTrack= (req, res, next) => {
     });
 }
 
+//Delete all tracks
+const deleteAllTracks= async (req, res, next) => {
+    await Track.deleteMany();
+    res.redirect('/profile');
+}
+
 module.exports= {
     getUploadTrack,
     postUploadTrack,
     getEditTrack,
     postEditTrack,
     deleteTrack,
+    deleteAllTracks,
     getTrack
 }

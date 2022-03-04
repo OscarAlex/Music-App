@@ -14,18 +14,18 @@
         <div class="container-fluid">
             <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
                 <ul class="navbar-nav me-auto">
-                    <!-- <% if(isAuthenticated){ %> -->
-                    <!-- <% } %> -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="/music">My playlist</a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" href="/upload_track">Upload song</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/add_label">New label</a>
-                    </li>
+                    <% if(isAuthenticated){ %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/music">My playlist</a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/upload_track">Upload song</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/add_label">New label</a>
+                        </li>
+                    <% } %>
                 </ul>
             </div>
             <div class="mx-auto order-0 pb-1">
@@ -42,24 +42,26 @@
             </div>
             <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/profile">My profile</a>
-                    </li>
+                    <% if(isAuthenticated){ %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile">My profile</a>
+                        </li>
+                    <% } %>
                     <% if(!isAuthenticated){ %>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/signin">Sign in</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/signup">Sign up</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/signin">Sign in</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/signup">Sign up</a>
+                        </li>
+                    <% } %>
                     <li class="nav-item">
                         <a class="nav-link" href="/about">About</a>
                     </li>
-                    <% } %>
                     <% if(isAuthenticated){ %>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/logout">Sign out</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/logout">Sign out</a>
+                        </li>
                     <% } %>
                 </ul>
             </div>
@@ -81,13 +83,23 @@
         </div>
     <% } %>
     
+    <% if(changesMessage != ''){ %>
+        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+            <%= changesMessage %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
     <!-- Labels and tracks messages -->
     <% if(labelMessage != ''){ %>
-        <div><%= labelMessage %></div>
+        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
+            <div><%= labelMessage %></div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     <% } %>
     
     <% if(trackMessage != ''){ %>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-secondary alert-dismissible fade show" role="alert">
             <%= trackMessage %>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>

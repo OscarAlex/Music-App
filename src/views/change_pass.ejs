@@ -1,0 +1,20 @@
+<%- layout('layouts/main.ejs') %>
+
+<div class="card p-4 mx-auto" style="width: 28rem;"> 
+    <h3 class="card-title text-center">Change your password</h3>
+    <div class="card-body">
+        <form action="/change_password" method="post">
+            <!-- Old password -->
+            <div class="mb-3">
+                <label class="form-label">Current password</label>
+                <input type="password" class="form-control" name="old">
+            </div>
+            <!-- New password -->
+            <div class="mb-3">
+                <label class="form-label">New password</label>
+                <input type="password" class="form-control" name="new">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>

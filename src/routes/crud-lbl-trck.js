@@ -1,45 +1,52 @@
-const { resolveSoa } = require('dns');
 const express= require('express');
-//const req = require('express/lib/request');
-//const res = require('express/lib/response');
 const router= express.Router();
 const { getNewLabel, 
         postNewLabel, 
         getEditLabel, 
         postEditLabel,
-        deleteLabel } = require('../controllers/labels-controller');
+        deleteLabel,
+        deleteAllLabels } = require('../controllers/labels-controller');
 const { getUploadTrack,
         postUploadTrack,
         getEditTrack,
         postEditTrack,
         deleteTrack,
+        deleteAllTracks,
         getTrack } = require('../controllers/tracks-controller');
 
-//Schema for the labels
-//const Label= require('../models/label');
+function isAuthenticated(req, res, next) {
+        if(req.isAuthenticated()){
+                return next();
+        }
+        //If not, redirect to main page
+        res.redirect('/');
+};
 
 //Add label
-router.get('/add_label', getNewLabel);
+router.get('/add_label', isAuthenticated, getNewLabel);
 router.post('/new_label', postNewLabel);
 
 //Edit label
-router.get('/edit_label/:id', getEditLabel);
-router.post('/edit_label/:id', postEditLabel);
+router.get('/edit_label/:id', isAuthenticated, getEditLabel);
+router.post('/edit_label/:id', isAuthenticated, postEditLabel);
 
 //Delete label
-router.post('/delete_label/:id', deleteLabel);
-
+router.post('/delete_label/:id', isAuthenticated, deleteLabel);
+//Delete all labels
+router.post('/delete_all_labels', isAuthenticated, deleteAllLabels);
 
 //Upload track
-router.get('/upload_track', getUploadTrack);
-router.post('/upload_track', postUploadTrack);
+router.get('/upload_track', isAuthenticated, getUploadTrack);
+router.post('/upload_track', isAuthenticated, postUploadTrack);
 
 //Edit track info
-router.get('/edit_track/:id', getEditTrack);
-router.post('/edit_track/:id', postEditTrack);
+router.get('/edit_track/:id', isAuthenticated, getEditTrack);
+router.post('/edit_track/:id', isAuthenticated, postEditTrack);
 
 //Delete track
-router.post('/delete_track/:id', deleteTrack);
+router.post('/delete_track/:id', isAuthenticated, deleteTrack);
+//Delete all tracks
+router.post('/delete_all_tracks', isAuthenticated, deleteAllTracks);
 
 //Get track
 router.get('/tracks/:id', getTrack);

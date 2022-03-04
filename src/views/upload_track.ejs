@@ -20,10 +20,9 @@
             </div>
             <!-- Labels -->
             <% if(labels.length == 0){ %> <!-- If no labels -->
-                <div class="card">
+                <div class="card mb-3">
                     <div class="card-body text-center">
                         <h5 class="card-title">No labels yet</h5>
-                        <a href="/add_label" class="btn btn-primary">Add new label</a>
                     </div>
                 </div>
             <% } else{ %>  <!-- If labels -->
@@ -71,7 +70,8 @@
         //Get input
         var input = event.srcElement;
         //Get name from file and remove extension
-        var fileName = input.files[0].name.split(".")[[0]];
+        var fileName = input.files[0].name.split(".");
+        fileName.splice(-1)
         //Write filename in Name field
         nameInput.value = fileName;
     });
@@ -90,10 +90,10 @@
     var obUrl;
     fileInput.addEventListener('change', function(e){
         var file = e.currentTarget.files[0];
-        //check file extension for audio/video type
+        //Check file extension for audio/video type
         if(file.name.match(/\.(avi|mp3|mp4|mpeg|ogg)$/i)){
-        obUrl = URL.createObjectURL(file);
-        audio.setAttribute('src', obUrl);
+            obUrl = URL.createObjectURL(file);
+            audio.setAttribute('src', obUrl);
         }
     });
 </script>

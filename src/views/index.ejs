@@ -1,9 +1,7 @@
 <%- layout('layouts/main.ejs') %>
 
 <!-- If not authenticated -->
-<!-- <% if(!isAuthenticated){ %> -->
-<!-- <% } else{ %> -->
-<!-- <% } %> -->
+<% if(!isAuthenticated){ %>
   <h1 class="text-center">Welcome to PlayB</h1>
   <br>
   <div class="px-5">
@@ -12,11 +10,20 @@
     </figure>
   
     <figure class="border p-5 text-end">
-        <h3>Associate them with labels</h3>
+        <h3>Associate them to labels</h3>
     </figure>
+
+    <figure class="border p-5">
+      <h3>Play your songs</h3>
+    </figure>
+
+    <figure class="border p-5 text-center">
+      <h3 class="mb-4">Start now!</h3>
+      <a href="/signup" class="btn btn-primary btn-lg">Sign up</a>
+  </figure>
   </div>
   <!-- If authenticated -->
-
+<% } else{ %> 
   <h1 class="text-center" id="playing">Now playing</h1>
   <br>
   <!-- Player -->
@@ -249,3 +256,4 @@
       }
     }
   </script>
+<% } %>

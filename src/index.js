@@ -5,7 +5,7 @@ const morgan= require('morgan');
 const passport= require('passport');
 const session= require('express-session');
 const flash= require('connect-flash');
-
+const {session_s}= require('./keys');
 //Inits
 const app= express();
 require('./database');
@@ -22,7 +22,7 @@ app.set('port', process.env.PORT || 3000);
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
 app.use(session({
-    secret: 'mysecretsession',
+    secret: session_s.secret,
     resave: false,
     saveUninitialized: false
 }));
@@ -34,6 +34,7 @@ app.use((req, res, next) => {
     //app.locals means a variable that is available in the whole app
     app.locals.signupMessage= req.flash('signupMessage');
     app.locals.signinMessage= req.flash('signinMessage');
+    app.locals.changesMessage= req.flash('changesMessage');
     app.locals.labelMessage= req.flash('labelMessage');
     app.locals.trackMessage= req.flash('trackMessage');
     //Get user info

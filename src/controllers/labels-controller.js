@@ -59,8 +59,9 @@ const postNewLabel = async (req, res, next) => {
                 { $addToSet:{ labels_ids: ObjectId(newLabel.id) }}
             );
         }
+        req.flash('labelMessage', 'Label created successfully');
 
-        res.redirect('/music');
+        res.redirect('/profile');
     }
 }
 
@@ -155,10 +156,16 @@ const deleteLabel= async (req, res, next) => {
     res.redirect('/profile');
 }
 
+const deleteAllLabels= async (req, res, next) => {
+    await Label.deleteMany();
+    res.redirect('/profile');
+}
+
 module.exports = {
     getNewLabel,
     postNewLabel,
     getEditLabel,
     postEditLabel,
-    deleteLabel
+    deleteLabel,
+    deleteAllLabels
 }

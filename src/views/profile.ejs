@@ -1,5 +1,11 @@
 <%- layout('layouts/main.ejs') %>
 
+<!-- Get file_ids from tracks in playlist -->
+<% var songs_ids= []; %>
+<% tracks.forEach(function(track){ %>
+    <% songs_ids.push(track.labels_ids) %>
+<% }); %>
+
 <h1 class="text-center">Profile</h1>
 
 <div class="card-group p-4">
@@ -7,17 +13,48 @@
     <div class="card p-2">
       <div class="card-body">
         <h5 class="card-title text-center">My stats</h5>
-        <br>Name
-        <br>email
-        <br>
-        <br># songs
-        <br># labels
-        <br>
-        <br>Song with most labels
-        <br>Label asociated to most songs
-        <br>
-        <br>This song has no labels yet
-        <br>This label has no songs yet
+        <div class="mb-4"></div> <!-- Spacing -->
+        <div class="card p-3 mb-3">
+            <div class="mb-1">
+                <strong>Name: </strong> <%= user.name %>
+            </div>
+            <div class="mb-1">
+                <strong>Email: </strong> <%= user.email %>
+            </div>
+            <div>
+                <a href="/change_name" class="btn btn-secondary btn-sm">Change name</a>
+                <a href="/change_password" class="btn btn-secondary btn-sm">Change password</a>
+            </div>
+        </div>
+        <div class="card p-3 mb-3">
+            <% if(tracks.length == 0){ %>
+                No songs
+            <% } else{ %>
+                <%= tracks.length %> songs
+            <% } %>
+            <br>
+            <% if(labels.length == 0){ %>
+                No labels
+            <% } else{ %>
+                <%= labels.length %> labels
+            <% } %>
+        </div>
+        <!-- Delete entire collections -->
+        <div class="text-center">
+            <% if(labels.length > 0 || tracks.length > 0){ %>
+                <h5 class="card-title">Warning!</h5>
+                <% if(labels.length > 0){ %>
+                    <form action="/delete_all_labels" method="post" style="display: inline-block;">
+                        <button class="btn btn-danger" onclick="return confirm('Are you sure you want to delete all labels?');">Delete all labels</button>
+                    </form>
+                <% } %>
+                <% if(tracks.length > 0){ %>
+                <form action="/delete_all_tracks" method="post" style="display: inline-block;">
+                    <button class="btn btn-danger" onclick="return confirm('Are you sure you want to delete all songs?');">Delete all songs</button>
+                </form>
+                <% } %>
+            <% } %>
+        </div>
       </div>
     </div>
     <!-- Songs column -->
@@ -27,7 +64,7 @@
         <% if(tracks.length == 0){ %> <!-- If no songs -->
             <div class="card">
                 <div class="card-body text-center">
-                    <h5 class="card-title">Any song yet</h5>
+                    <h5 class="card-title">No songs yet</h5>
                     <a href="/upload_track" class="btn btn-primary">Upload new song</a>
                 </div>
             </div>
@@ -60,8 +97,8 @@
     </div>
     <!-- Labels column -->
     <div class="card p-2">
-      <div class="card-body">
-        <h5 class="card-title text-center mb-4">Edit labels</h5>      
+        <div class="card-body">
+            <h5 class="card-title text-center mb-4">Edit labels</h5>
             <% if(labels.length == 0){ %> <!-- If no labels -->
                 <div class="card">
                     <div class="card-body text-center">
@@ -94,6 +131,6 @@
                     <% }); %>
                 </ul>
             <% } %>
-      </div>
+        </div>
     </div>
   </div>

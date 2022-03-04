@@ -19,7 +19,7 @@
             <% if(tracks.length == 0){ %> <!-- If no tracks -->
                 <div class="card">
                     <div class="card-body text-center">
-                        <h5 class="card-title">Any song yet</h5>
+                        <h5 class="card-title">No songs yet</h5>
                         <a href="/upload_track" class="btn btn-primary">Upload new song</a>
                     </div>
                 </div>
@@ -84,6 +84,7 @@
             <h5 class="card-title text-center">My labels</h5>
             <form action="/add_with_labels" method="post">
                 <% if(labels.length == 0){ %> <!-- If no labels -->
+                    <div class="mb-5"></div> <!-- Spacing -->
                     <div class="card">
                         <div class="card-body text-center">
                             <h5 class="card-title">No labels yet</h5>
@@ -129,22 +130,6 @@
                             console.log("unchecked")
                             row.classList.remove("active")   
                         }
-
-                        // //Get label object by id
-                        // const labels = <%- JSON.stringify(labels) %>;
-                        // var tracks_of_label;
-                        // labels.forEach(label => {
-                        //     if(label["_id"].toString() == id ){
-                        //         tracks_of_label= label["tracks_ids"];
-                        //     }
-                        // });
-                        // //window.location.href = "/add_with/"+ id;
-                        // console.log(tracks_of_label);
-                        
-                        // //Get songs_ids list
-
-                        // //If song not in playlist, add
-
                     }
                 </script>
             <% } %>

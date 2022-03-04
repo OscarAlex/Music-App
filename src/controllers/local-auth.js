@@ -24,6 +24,8 @@ passport.use('local-signup', new LocalStrategy({
 }, async (req, email, password, done) => {
     //Validate if user already exits
     const user= await User.findOne({email: email});
+
+    //If user exists
     if(user){
         //Return message
         return done(null, false, req.flash('signupMessage', 'The email is already registered'));
@@ -47,7 +49,8 @@ passport.use('local-signin', new LocalStrategy({
 }, async (req, email, password, done) => {
     //Validate if user exits
     const user= await User.findOne({email: email});
-    //If does not exit
+    
+    //If user does not exit
     if(!user){
         return done(null, false, req.flash('signinMessage', 'The user does not exit'));
     }
