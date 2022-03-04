@@ -17,6 +17,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 app.set('port', process.env.PORT || 3000);
+app.set('host', process.env.HOST || '0.0.0.0');
 
 //Middlewares (Functions before routes)
 app.use(morgan('dev'));
@@ -49,6 +50,6 @@ app.use('/', require('./routes/crud-lbl-trck'));
 app.use('/', require('./routes/play-music'));
 
 //Start server
-app.listen(app.get('port'), () => {
+app.listen(app.get('port'), app.get('host'), () => {
     console.log('Server on port', app.get('port'));
 })
